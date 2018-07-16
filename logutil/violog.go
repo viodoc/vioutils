@@ -9,38 +9,27 @@ import (
 
 var Log *logrus.Logger
 
-func NewLogger(infoPath,errorPath string) *logrus.Logger {
+func NewLogger(infoPath,errorPath,level string) *logrus.Logger {
 	if Log != nil {
 		return Log
 	}
-
-	//pathMap := lfshook.PathMap{
-	//	logrus.InfoLevel:  infoPath,
-	//	logrus.ErrorLevel: errorPath,
-	//}
 	infoWriter,err := rotatelogs.New(
-		infoPath+".%Y%m%d%H%M",
-		rotatelogs.WithLinkName(infoPath),
+		infoPath+".%Y%m%d",
 		rotatelogs.WithMaxAge(time.Duration(86400)*time.Second),
 		rotatelogs.WithRotationTime(time.Duration(604800)*time.Second),
 		)
 	if err!=nil{
-		Log.Fatalf("init log error: %v",err)
+		logrus.Fatalf("init log error: %v",err)
 	}
 	errWriter,err := rotatelogs.New(
-		infoPath+".%Y%m%d%H%M",
-		rotatelogs.WithLinkName(errorPath),
+		errorPath+".%Y%m%d",
 		rotatelogs.WithMaxAge(time.Duration(86400)*time.Second),
 		rotatelogs.WithRotationTime(time.Duration(604800)*time.Second),
 	)
 	if err!=nil{
-		Log.Fatalf("init log error: %v",err)
+		logrus.Fatalf("init log error: %v",err)
 	}
 	Log = logrus.New()
-	//Log.Hooks.Add(lfshook.NewHook(
-	//	pathMap,
-	//	&logrus.JSONFormatter{},
-	//))
 	Log.Hooks.Add(lfshook.NewHook(
 		lfshook.WriterMap{
 			logrus.InfoLevel:  infoWriter,
@@ -48,5 +37,7 @@ func NewLogger(infoPath,errorPath string) *logrus.Logger {
 		},
 		&logrus.JSONFormatter{},
 	))
+	lel,err:=logrus.ParseLevel(level)
+	Log.SetLevel(lel)
 	return Log
 }
