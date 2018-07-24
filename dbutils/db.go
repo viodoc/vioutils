@@ -3,17 +3,25 @@ package dbutils
 import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/go-sql-driver/mysql"
+	"sync"
 )
 
 type vioDB struct {
 	*sqlx.DB
 }
+var (
+	viodb *vioDB
+	once sync.Once
+)
 
 func NewDB(driverName, dsn string) DB {
-	db := sqlx.MustOpen(driverName, dsn)
-	db.SetMaxIdleConns(1)
-	db.SetMaxOpenConns(500)
-	return &vioDB{DB: db}
+	once.Do(func() {
+		viodb = &vioDB{}
+		viodb.DB = sqlx.MustOpen(driverName, dsn)
+		viodb.DB.SetMaxIdleConns(10)
+		viodb.DB.SetMaxOpenConns(500)
+	})
+	return viodb
 }
 
 func (db *vioDB) Get(dest interface{}, query string, args ...interface{}) error {
