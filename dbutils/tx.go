@@ -1,4 +1,4 @@
-package dbutils
+package dbutil
 
 import "github.com/jmoiron/sqlx"
 
@@ -16,17 +16,19 @@ func (tx *vioTx) Get(dest interface{}, query string, args ...interface{}) error 
 	return get(tx.Tx, dest, query, args...)
 }
 
-func (tx *vioTx) NamedSelect(dest interface{}, query string, arg interface{}) {
+func (tx *vioTx) NamedSelect(dest interface{}, query string, arg interface{}) error {
 	stmt, err := tx.Tx.PrepareNamed(query)
-	panicErr(err)
-	namedSelect(stmt, dest, arg)
+	if err != nil{
+		return err
+	}
+	return namedSelect(stmt, dest, arg)
 }
 
-func (tx *vioTx) Select(dest interface{}, query string, args ...interface{}) {
-	selectx(tx.Tx, dest, query, args...)
+func (tx *vioTx) Select(dest interface{}, query string, args ...interface{}) error {
+	return selectx(tx.Tx, dest, query, args...)
 }
 
-func (tx *vioTx) NamedExec(query string, arg interface{}) Result {
+func (tx *vioTx) NamedExec(query string, arg interface{}) (Result,error) {
 	return namedExec(tx.Tx, query, arg)
 }
 

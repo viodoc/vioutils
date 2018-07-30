@@ -1,4 +1,4 @@
-package dbutils
+package dbutil
 
 import (
 	"github.com/jmoiron/sqlx"
@@ -13,14 +13,12 @@ func get(queryer sqlx.Queryer, dest interface{}, query string, args ...interface
 	return sqlx.Get(queryer, dest, query, args...)
 }
 
-func namedSelect(stmt *sqlx.NamedStmt, dest interface{}, arg interface{}) {
-	err := stmt.Select(dest, arg)
-	panicErr(err)
+func namedSelect(stmt *sqlx.NamedStmt, dest interface{}, arg interface{}) error {
+	return stmt.Select(dest, arg)
 }
 
-func selectx(queryer sqlx.Queryer, dest interface{}, query string, args ...interface{}) {
-	err := sqlx.Select(queryer, dest, query, args...)
-	panicErr(err)
+func selectx(queryer sqlx.Queryer, dest interface{}, query string, args ...interface{}) error {
+	return sqlx.Select(queryer, dest, query, args...)
 }
 
 func exec(e sqlx.Execer, query string, args ...interface{}) Result {
@@ -28,10 +26,9 @@ func exec(e sqlx.Execer, query string, args ...interface{}) Result {
 	return &vioResult{result}
 }
 
-func namedExec(ext sqlx.Ext, query string, arg interface{}) Result {
+func namedExec(ext sqlx.Ext, query string, arg interface{}) (Result,error) {
 	result, err := sqlx.NamedExec(ext, query, arg)
-	panicErr(err)
-	return &vioResult{result}
+	return &vioResult{result},err
 }
 
 func panicErr(err error) {

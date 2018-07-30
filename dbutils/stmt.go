@@ -1,4 +1,4 @@
-package dbutils
+package dbutil
 
 import (
 	"github.com/jmoiron/sqlx"
@@ -30,8 +30,8 @@ func (vns *vioNamedStmt) NamedGet(dest interface{}, arg interface{}) error {
 	return namedGet(vns.NamedStmt, dest, arg)
 }
 
-func (vns *vioNamedStmt) NamedSelect(dest interface{}, arg interface{}) {
-	namedSelect(vns.NamedStmt, dest, arg)
+func (vns *vioNamedStmt) NamedSelect(dest interface{}, arg interface{}) error {
+	return namedSelect(vns.NamedStmt, dest, arg)
 }
 func (vns *vioNamedStmt) NamedExec(arg interface{}) Result {
 	result := vns.NamedStmt.MustExec(arg)

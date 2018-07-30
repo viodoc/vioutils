@@ -1,4 +1,4 @@
-package dbutils
+package dbutil
 
 type DB interface {
 	preparer
@@ -25,7 +25,7 @@ type Stmt interface {
 type NamedStmt interface {
 	NamedGet(dest interface{}, arg interface{}) error
 
-	NamedSelect(dest interface{}, arg interface{})
+	NamedSelect(dest interface{}, arg interface{}) error
 
 	NamedExec(arg interface{}) Result
 }
@@ -40,11 +40,11 @@ type accesser interface {
 
 	Get(dest interface{}, query string, args ...interface{}) error
 
-	NamedSelect(dest interface{}, query string, arg interface{})
+	NamedSelect(dest interface{}, query string, arg interface{}) error
 
-	Select(dest interface{}, query string, args ...interface{})
+	Select(dest interface{}, query string, args ...interface{}) error
 
-	NamedExec(query string, arg interface{}) Result
+	NamedExec(query string, arg interface{}) (Result,error)
 
 	Exec(query string, args ...interface{}) Result
 }

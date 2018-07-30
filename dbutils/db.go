@@ -1,4 +1,4 @@
-package dbutils
+package dbutil
 
 import (
 	"github.com/jmoiron/sqlx"
@@ -14,11 +14,11 @@ var (
 	once sync.Once
 )
 
-func NewDB(driverName, dsn string) DB {
+func New(driverName, dsn string) DB {
 	once.Do(func() {
 		viodb = &vioDB{}
 		viodb.DB = sqlx.MustOpen(driverName, dsn)
-		viodb.DB.SetMaxIdleConns(10)
+		viodb.DB.SetMaxIdleConns(50)
 		viodb.DB.SetMaxOpenConns(500)
 	})
 	return viodb
@@ -34,17 +34,19 @@ func (db *vioDB) NamedGet(dest interface{}, query string, arg interface{}) error
 	return namedGet(stmt, dest, arg)
 }
 
-func (db *vioDB) NamedSelect(dest interface{}, query string, arg interface{}) {
+func (db *vioDB) NamedSelect(dest interface{}, query string, arg interface{}) error {
 	stmt, err := db.DB.PrepareNamed(query)
-	panicErr(err)
-	namedSelect(stmt, dest, arg)
+	if err!=nil{
+		return err
+	}
+	return namedSelect(stmt, dest, arg)
 }
 
-func (db *vioDB) Select(dest interface{}, query string, args ...interface{}) {
-	selectx(db.DB, dest, query, args...)
+func (db *vioDB) Select(dest interface{}, query string, args ...interface{}) error {
+	return selectx(db.DB, dest, query, args...)
 }
 
-func (db *vioDB) NamedExec(query string, arg interface{}) Result {
+func (db *vioDB) NamedExec(query string, arg interface{}) (Result,error) {
 	return namedExec(db.DB, query, arg)
 }
 
