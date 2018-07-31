@@ -18,8 +18,8 @@ func New(driverName, dsn string) DB {
 	once.Do(func() {
 		viodb = &vioDB{}
 		viodb.DB = sqlx.MustOpen(driverName, dsn)
-		viodb.DB.SetMaxIdleConns(50)
-		viodb.DB.SetMaxOpenConns(500)
+		viodb.DB.SetMaxIdleConns(1)
+		viodb.DB.SetMaxOpenConns(10)
 	})
 	return viodb
 }
