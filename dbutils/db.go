@@ -36,7 +36,11 @@ func (db *vioDB) Get(dest interface{}, query string, args ...interface{}) error 
 
 func (db *vioDB) NamedGet(dest interface{}, query string, arg interface{}) error {
 	stmt, err := db.DB.PrepareNamed(query)
-	defer stmt.Close()
+	defer func(){
+		if stmt !=nil{
+			stmt.Close()
+		}
+	}()
 	if err!=nil{
 		return err
 	}
@@ -45,7 +49,11 @@ func (db *vioDB) NamedGet(dest interface{}, query string, arg interface{}) error
 
 func (db *vioDB) NamedSelect(dest interface{}, query string, arg interface{}) error {
 	stmt, err := db.DB.PrepareNamed(query)
-	defer stmt.Close()
+	defer func(){
+		if stmt !=nil{
+			stmt.Close()
+		}
+	}()
 	if err!=nil{
 		return err
 	}
@@ -58,7 +66,11 @@ func (db *vioDB) Select(dest interface{}, query string, args ...interface{}) err
 
 func (db *vioDB) NamedExec(query string, arg interface{}) (Result,error) {
 	stmt, err := db.DB.PrepareNamed(query)
-	defer stmt.Close()
+	defer func(){
+		if stmt !=nil{
+			stmt.Close()
+		}
+	}()
 	if err!=nil{
 		return nil,err
 	}
