@@ -79,7 +79,7 @@ func StrToDate(date string) (time.Time,error){
 		b.WriteString(":")
 		b.WriteString(s)
 		date = b.String()
-		return time.Parse("2006-01-02 00:00:00",date)
+		return time.Parse("2006-01-02 15:04:05",date)
 	}
 	return time.Time{},errors.New("date/time format error")
 }
